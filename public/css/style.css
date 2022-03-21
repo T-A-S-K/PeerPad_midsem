@@ -2,7 +2,7 @@
 Fonts
 ****************/
 
-@font-face {
+/* @font-face {
   font-family: "InputLight";
   src: url('../assets/fonts/InputSans-Light.ttf');
 }
@@ -10,7 +10,7 @@ Fonts
 @font-face {
   font-family: "InputMedium";
   src: url('../assets/fonts/InputSans-Medium.ttf');
-}
+} */
 
 /****************
 animations
