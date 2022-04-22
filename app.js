@@ -14,10 +14,26 @@ app.get('/index', function (req, res) {
   res.render('new', {title: 'PeerPad'});
 });
 
-app.post('/join', function (req, res) {
-	console.log("REQQ==",req.body.doc)
+app.get('/login', function (req, res) {
+  res.render('login', {title: 'PeerPad'});
+});
+
+app.post('/logged', function (req, res) {
+	console.log("EMAIL=",req.body.email)
+  res.render('new', {title: 'PeerPad',email:req.body.email});
+});
+
+app.post('/add/:id', function (req, res) {
+	console.log("EMAIL to be added=",req.body.email,req.params.id)
+	// res.render('index',{status:"url"})
+})
+
+app.post('/join/:email', function (req, res) {
+	console.log("REQQ==",req.body.doc,req.params.email)
 	str=req.body.doc
+	console.log(typeof(str))
 	url=str.substring(str.indexOf('?') + 1)
+	
 	x=1
 	if(x==0){
 		res.render('new');
@@ -29,8 +45,9 @@ app.post('/join', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-	console.log("QUERY=",req.query)
-	res.render('index', {title: 'PeerPad'});
+	console.log("QUERY=",req.query,typeof(req.body),Object.keys(req.query)[0])
+	id=String(Object.keys(req.query)[0])
+	res.render('index', {title: 'PeerPad',id:id});
 });
 
 var srv = app.listen(port, function() {

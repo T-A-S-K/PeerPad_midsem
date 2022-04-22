@@ -1,12 +1,16 @@
-extends layout.pug
+//- extends layout.pug
 
 
 
 block link
   p.sharing-link
-  
+    //- script. 
+    //-   localStorage.setItem("email", "sakshikp31@gmail.com")
+    //-   var data=localStorage.getItem("email")
+    //-   console.log(data)
     a(style="color: #f0ad4e", href='/') Create a new document 
-    form(id="join" action="/join" method="post")
+    form(id="join" action="/join/"+email method="post")
+
         if status
             div 
                 //- span Order #{status} 
@@ -21,5 +25,5 @@ block link
       i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
     //- span(class="copy-status") Copied!
 
-block scripts
-  script(src='js/main.js')
+//- block scripts
+//-   script(src='js/main.js')

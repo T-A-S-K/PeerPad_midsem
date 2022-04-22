@@ -9,6 +9,12 @@ block link
     span(class="copy-container" data-tooltip="Copy to Clipboard")
       i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
     span(class="copy-status") Copied!
+    form(id="join" action="/add/"+id  method="post")
+        input(type="text", name="email", value="", placeholder="Join document")
+        br
+        div 
+          input(type="submit" value="Add")
+ 
 
 block scripts
   script(src='js/main.js')
