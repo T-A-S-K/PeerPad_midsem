@@ -1,29 +1,24 @@
-doctype html
-html(lang="en")
-  head
-    title= title
-    link(rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css")
-    link(rel='stylesheet' href='css/style.css')
-    link(rel='shortcut icon' href='assets/img/favicon.ico' type='image/x-icon')
-  body
-    .navbar
-      a(href='/' target="_blank")
-        h1.logo PeerPad
-      .nav-items
-        block nav
-    
-    #peerpad.hide
-      .text-wrapper
-        .editor
-          .header
-            block link
-            button#download(type='button') Save
-            input#file(type='file' accept='.txt, .js, .rb, .md')
-          textarea(row='10' col='20')
-        p#peerId
-      
+doctype html(lang='en')
+head
+  meta(charset='utf-8')
+  meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  meta(http-equiv='x-ua-compatible', content='ie=edge')
+  title PeerPad | #{title}
+  link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css', integrity='sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd', crossorigin='anonymous')
+  link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
+  link(rel='stylesheet', href='/stylesheets/style.css')
 
-    script(src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js")
-    script.
-      feather.replace({ 'stroke-width': 3 });
-    block scripts
+  body
+    // load navbar.jade
+    include navbar
+
+    // content block
+    block content
+
+    // footer
+    p.foot.text-xs-center A Treehouse Project
+
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js', integrity='sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7', crossorigin='anonymous')
+
+    

@@ -1,22 +1,25 @@
-form(method="post" action="/registerUser")
-    table 
-        tr
-            td Username 
-            td 
-                input(type="text" name="username")
-        tr 
-            td Fullname 
-            td 
-                input(type="text" name="fullname")
-        tr 
-            td Password 
-            td 
-                input(type="password" name="password")
-        tr 
-            td Confirm password 
-            td 
-                input(type="password" name="confirmPassword")
-        tr 
-            td
-            td
-                input(type="submit" value="Register")
+extends layout
+
+block content
+  .main.container.row
+    .col-md-6.col-md-offset-3
+      h1.display-4.m-b-2 Sign Up
+      
+      // register form
+      form(method='POST' action='/registerUser')
+        div.form-group
+          label(for='name') Name:
+          input#name.form-control(type='text', placeholder='first and last' name='username')
+        div.form-group
+          label(for='email') Email:
+          input#email.form-control(type='email', placeholder='name@email.com' name='email')
+        div.form-group
+          label(for='favoriteBook') Favorite Book:
+          input#favoriteBook.form-control(type='text', placeholder='title of book' name='favoriteBook')
+        div.form-group
+          label(for='pw') Password:
+          input#pw.form-control(type='password' name='password')
+        div.form-group
+          label(for='pw2') Confirm Password:
+          input#pw2.form-control(type='password' name='confirmPassword')
+        button.btn.btn-primary(type='submit') Sign up

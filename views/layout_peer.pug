@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+  head
+    title= title
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css")
+    link(rel='stylesheet' href='css/style.css')
+    link(rel='shortcut icon' href='assets/img/favicon.ico' type='image/x-icon')
+  body
+    .navbar
+      a(href='/' target="_blank")
+        h1.logo PeerPad
+      .nav-items
+        block nav
+    
+    #peerpad.hide
+      .text-wrapper
+        .editor
+          .header
+            block link
+            button#download(type='button') Save
+            input#file(type='file' accept='.txt, .js, .rb, .md')
+          textarea(row='10' col='20')
+        p#peerId
+      
+
+    script(src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js")
+    script.
+      feather.replace({ 'stroke-width': 3 });
+    block scripts
