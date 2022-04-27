@@ -129,14 +129,14 @@ app.get('/register', mid.loggedOut, function(req, res, next) {
 
 app.post("/registerUser", function (req, res) {
   console.log(req.body);
-  bycrypt.hash(req.body.password, 10, function (err, hashedPass) {
+  bycrypt.hash(req.body.password, 10, function (err, hashedPass) { //2 times SMHHHHHH
     if (err) {
       res.json({
         error: err,
       });
     }
     let user = new User({
-      username: req.body.username,
+      email: req.body.email,
       password: hashedPass,
     });
     console.log("This is my pass: " + typeof hashedPass);
@@ -197,8 +197,10 @@ app.post('/loginUser', function(req, res, next) {
         err.status = 401;
         return next(err);
       }  else {
+        console.log("SESSION")
         req.session.userId = user._id;
-        return res.redirect('/profile');
+        // return res.redirect('/profile');
+        res.render('profile', {title: 'PeerPad',email:req.body.email});
       }
     });
   } else {
@@ -215,14 +217,47 @@ app.get('/profile', mid.requiresLogin, function(req, res, next) {
           return next(error);
         } else {
 			console.log('trying to render')
-          return res.render('profile', { title: 'Profile', name: user.username, favorite: user.favoriteBook });
+          return res.render('profile', { title: 'Profile', name: user.username, favorite: user.favoriteBook, url:'' });
         }
       });
 });
 
+app.post('/join/:email', function (req, res) {
+	console.log("REQQ==",req.body.doc,req.params.email)
+	str=req.body.doc
+	console.log(typeof(str))
+	url=str.substring(str.indexOf('?') + 1)
+	console.log("URLLL->>>",url)
+	x=1
+	if(x==0){
+		res.redirect('/profile');
+	}
+	else{
+    res.redirect('/'+"?"+url)
+//		res.render('profile',{url:url})
+	}
+	
+});
+
+app.post('/add/:id', function (req, res) {
+	console.log("EMAIL to be added=",req.body.email,req.params.id)
+  if(id!= undefined){
+     console.log("CHECK->",id)
+     res.redirect('/'+"?"+id)
+  }
+  else{
+    res.redirect('/')
+  }
+ 
+	// res.render('index',{status:"url"})
+})
+
 app.get("/", function (req, res) {
   console.log("QUERY=", req.query);
-  res.render("index", { title: "PeerPad" });
+	console.log("QUERY=",req.query,typeof(req.body),Object.keys(req.query)[0])
+	id=String(Object.keys(req.query)[0])
+  console.log("ID->",id)
+  res.render("peerpad", { title: "PeerPad",id:id });
 });
 
 var srv = app.listen(port, function () {

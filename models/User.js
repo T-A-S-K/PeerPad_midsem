@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 const userSchema = new Schema({
-    username:{
+    email:{
         type: String
     },
     password:{
@@ -22,17 +22,18 @@ userSchema.statics.authenticate = function(email, password, callback) {
           err.status = 401;
           return callback(err);
         }
+        console.log("CHECK->",user.email,user.password.length,password)
         bcrypt.compare(password, user.password , function(error, result) {
           if (result === true) {
               console.log('IT WORKS')
             return callback(null, user);
           } else {
-              console.log('DOENT WORK')
+              console.log('DOENT WORK') 
             return callback();
           }
         })
         // bcrypt.hash(password, 10, function(err, result) {
-        //     console.log("result")
+        //     console.log("result") plain password
         //     console.log(result)
         //     console.log(password)
             
@@ -43,16 +44,26 @@ userSchema.statics.authenticate = function(email, password, callback) {
       });
 }
 // hash password before saving to database
-userSchema.pre('save', function(next) {
-  var user = this;
-  bcrypt.hash(user.password, 10, function(err, hash) {
-    if (err) {
-      return next(err);
-    }
-    user.password = hash;
-    next();
-  })
-});
+// userSchema.pre('save', function(next) {
+//   var user = this;
+//   bcrypt.hash(user.password, 8, function(err, hash) {
+//     if (err) {
+//       return next(err);
+//     }
+//     console.log("HASH=",hash,hash.length)
+//   // bcrypt.compare(user.password, hash , function(error, result) {
+//   //         if (result === true) {
+//   //             console.log('IT WORKS')
+//   //           return callback(null, user);
+//   //         } else {
+//   //             console.log('DOENT WORK')
+//   //           return callback();
+//   //         }
+//   //       })
+//         user.password = hash;
+//     next();
+//   })
+// });
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

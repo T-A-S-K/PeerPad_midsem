@@ -8,7 +8,30 @@ block content
         //-     //- img.avatar.img-circle.hidden-xs-down(src='/images/avatar.png', alt='avatar')
         //-     | #{name}
         .div
-          a.btn.btn-primary(href='/peerpad') Create new document
+          a.btn.btn-primary(href='/') Create new document
         .div
           //- | #{favorite}
-          a.btn.btn-primary(href='/peerpad') Join document
+          //- a.btn.btn-primary(href='/peerpad') Join document
+          form(id="join" action="/join/"+email method="post")
+            if url
+              div
+                a.btn.btn-primary(href='/'+"?"+url) Verified 
+            else
+              input(type="text", name="doc", value="", placeholder="Join document") 
+              br
+              br
+              div 
+                  input(type="submit" value="Verify my access and join a document" style="background-color:rgba(131,4,2,255);color:white;border-color: rgba(131,4,2,255);height:45px;width:300px;border-radius:5px")             
+
+          //- form(id="join" action="/join/"+email method="post")
+
+          //-     if status
+          //-         div 
+          //-             //- span Order #{status} 
+          //-           a.btn.btn-primary(href='/'+"?"+status) Verified
+                      
+          //-     else 
+          //-         input(type="text", name="doc", value="", placeholder="Join document")
+          //-         br
+          //-         div 
+          //-             input(type="submit" value="Verify my access and join a document")

@@ -3,6 +3,13 @@ extends layout_peer
 
 block link
   p.sharing-link
+    form(id="join" action="/add/"+id method="post")
+      input(type="email", name="doc", value="", placeholder="email") 
+      br
+      br
+      div 
+          input(type="submit" value="Add email" style="background-color:rgba(131,4,2,255);color:white;border-color: rgba(131,4,2,255);height:30px;width:150px;border-radius:5px")             
+      br
     a.link(id='myLink' target="_blank") Sharing Link
     span(id="myLinkInput" class="aside disappear")
     span(class="copy-container" data-tooltip="Copy to Clipboard")
