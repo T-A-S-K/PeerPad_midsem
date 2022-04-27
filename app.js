@@ -199,6 +199,7 @@ app.post('/loginUser', function(req, res, next) {
       }  else {
         console.log("SESSION")
         req.session.userId = user._id;
+        req.session.userEmail=req.body.email
         // return res.redirect('/profile');
         res.render('profile', {title: 'PeerPad',email:req.body.email});
       }
@@ -225,16 +226,23 @@ app.get('/profile', mid.requiresLogin, function(req, res, next) {
 app.post('/join/:email', function (req, res) {
 	console.log("REQQ==",req.body.doc,req.params.email)
 	str=req.body.doc
-	console.log(typeof(str))
-	url=str.substring(str.indexOf('?') + 1)
-	console.log("URLLL->>>",url)
+  email=req.body.email || req.session.userEmail
+	console.log(typeof(str),req.session.userEmail,email)
+  docid=str.substring(0,str.indexOf('?'))
+  console.log("->",docid)
+  docid=docid.substring(docid.lastIndexOf('/') + 1)
+  console.log("regex->",docid)
+  id=str.substring(str.indexOf('?') + 1)
+
+  //check the access using mail id and docid
+
 	x=1
 	if(x==0){
 		res.redirect('/profile');
 	}
 	else{
-    res.redirect('/'+"?"+url)
-//		res.render('profile',{url:url})
+    req.session.docId=docid
+    res.redirect('/'+"?"+id)
 	}
 	
 });
@@ -252,12 +260,46 @@ app.post('/add/:id', function (req, res) {
 	// res.render('index',{status:"url"})
 })
 
+// app.get("/:id", function (req, res) {
+//   console.log("QUERY=", req.query);
+// 	// console.log("QUERY=",req.query,typeof(req.body),Object.keys(req.query)[0])
+// 	id=String(Object.keys(req.query)[0])
+//   console.log(req.params.id)
+//   docid=req.params.id
+//   // id=str.substring(str.indexOf('?') + 1)
+//   // console.log("ID->",id)
+//   res.redirect('/'+"?"+id)
+//  // res.render("peerpad", { title: "PeerPad",id:id });
+// });
+
 app.get("/", function (req, res) {
   console.log("QUERY=", req.query);
 	console.log("QUERY=",req.query,typeof(req.body),Object.keys(req.query)[0])
 	id=String(Object.keys(req.query)[0])
-  console.log("ID->",id)
-  res.render("peerpad", { title: "PeerPad",id:id });
+  console.log("ID->",typeof(id))
+  if(id=="undefined"){
+    console.log("LOL")
+  }
+  console.log("count=",req.session.docId, req.session.userEmail)
+   if(id!="undefined" && req.session.docId && req.session.userEmail){
+  // if(id!="undefined" && req.session.count!=1){
+    console.log("inside if")
+    res.render("peerpad", { title: "PeerPad",id:id });
+  }else{
+  if(id=="undefined"){
+    console.log("inside sec if")
+    res.render("peerpad", { title: "PeerPad" });
+  }else{
+    res.send("404")
+  }
+  }
+
+
+  
+});
+
+app.get('*', function(req, res){
+  res.send('404 not found');
 });
 
 var srv = app.listen(port, function () {
