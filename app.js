@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const port = 3000;
+var nodemailer = require('nodemailer');
 const bodyParser = require("body-parser");
 const http = require("http");
 const mongoose = require("mongoose");
@@ -17,6 +18,15 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'chasecompskjsce@gmail.com',
+    pass: 'rahil_loves_sex'
+  }
+});
+
 
 mongoose
   .connect(databaseUrl)
@@ -35,9 +45,32 @@ app.use(session({
     mongoUrl: "mongodb://localhost:27017/Node_Auth"
   })
 }));
-  
+
 app.get("/index", function (req, res) {
   res.render("new", { title: "PeerPad" });
+});
+
+app.post("/sendEmail", function (req, res) {
+  console.log('WORKS ON SERVER');
+  let email = req.body.email;
+
+  let link = req.body.link;
+  console.log(email);
+  console.log(link)
+  var mailOptions = {
+    from: 'chasecompskjsce@gmail.com',
+    to: email,
+    subject: 'Peerpad document shared',
+    text: 'click on the link and start using peerpad: ' + link,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 });
 
 app.post("/join", function (req, res) {
@@ -56,36 +89,36 @@ app.post("/join", function (req, res) {
 //   res.render("login", { title: "RANDOM" });
 // });
 
-app.get('/login', mid.loggedOut, function(req, res, next) {
-	console.log('INSIDE LOGIN');
-  return res.render('login', { title: 'Log In'});
+app.get('/login', mid.loggedOut, function (req, res, next) {
+  console.log('INSIDE LOGIN');
+  return res.render('login', { title: 'Log In' });
 });
 
 // app.get("/register", function (req, res) {
 //   res.render("register");
 // });
 
-app.get('/logout', function(req, res, next) {
+app.get('/logout', function (req, res, next) {
   if (req.session) {
     // delete session object
-    req.session.destroy(function(err) {
-      if(err) {
+    req.session.destroy(function (err) {
+      if (err) {
         return next(err);
       } else {
-        return res.redirect('/');
+        return res.redirect('/login');
       }
     });
   }
 });
 
-app.get('/register', mid.loggedOut, function(req, res, next) {
+app.get('/register', mid.loggedOut, function (req, res, next) {
   return res.render('register', { title: 'Sign Up' });
 });
 
 // app.post('/registerUser', function(req, res, next) {
 //   if (
 //     req.body.username &&
-    
+
 //     req.body.password &&
 //     req.body.confirmPassword) {
 
@@ -110,7 +143,7 @@ app.get('/register', mid.loggedOut, function(req, res, next) {
 // 		  req.session.userId = user._id;
 //         res.render("login", { title: "RANDOM" });
 //       })
-	  
+
 //     //   User.create(userData, function (error, user) {
 //     //     if (error) {
 //     //       return next(error);
@@ -146,7 +179,7 @@ app.post("/registerUser", function (req, res) {
         res.render("login", { title: "RANDOM" });
       })
       .catch((error) => {
-		  console.log(error)
+        console.log(error)
         res.json({
           message: "Error Occured",
         });
@@ -189,19 +222,19 @@ app.post("/registerUser", function (req, res) {
 //     })
 // })
 
-app.post('/loginUser', function(req, res, next) {
+app.post('/loginUser', function (req, res, next) {
   if (req.body.email && req.body.password) {
     User.authenticate(req.body.email, req.body.password, function (error, user) {
       if (error || !user) {
         var err = new Error('Wrong email or password.');
         err.status = 401;
         return next(err);
-      }  else {
+      } else {
         console.log("SESSION")
         req.session.userId = user._id;
-        req.session.userEmail=req.body.email
+        req.session.userEmail = req.body.email
         // return res.redirect('/profile');
-        res.render('profile', {title: 'PeerPad',email:req.body.email});
+        res.render('profile', { title: 'PeerPad', email: req.body.email });
       }
     });
   } else {
@@ -211,53 +244,53 @@ app.post('/loginUser', function(req, res, next) {
   }
 });
 
-app.get('/profile', mid.requiresLogin, function(req, res, next) {
+app.get('/profile', mid.requiresLogin, function (req, res, next) {
   User.findById(req.session.userId)
-      .exec(function (error, user) {
-        if (error) {
-          return next(error);
-        } else {
-			console.log('trying to render')
-          return res.render('profile', { title: 'Profile', name: user.username, favorite: user.favoriteBook, url:'' });
-        }
-      });
+    .exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        console.log('trying to render')
+        return res.render('profile', { title: 'Profile', name: user.username, favorite: user.favoriteBook, url: '' });
+      }
+    });
 });
 
 app.post('/join/:email', function (req, res) {
-	console.log("REQQ==",req.body.doc,req.params.email)
-	str=req.body.doc
-  email=req.body.email || req.session.userEmail
-	console.log(typeof(str),req.session.userEmail,email)
-  docid=str.substring(0,str.indexOf('?'))
-  console.log("->",docid)
-  docid=docid.substring(docid.lastIndexOf('/') + 1)
-  console.log("regex->",docid)
-  id=str.substring(str.indexOf('?') + 1)
+  console.log("REQQ==", req.body.doc, req.params.email)
+  str = req.body.doc
+  email = req.body.email || req.session.userEmail
+  console.log(typeof (str), req.session.userEmail, email)
+  docid = str.substring(0, str.indexOf('?'))
+  console.log("->", docid)
+  docid = docid.substring(docid.lastIndexOf('/') + 1)
+  console.log("regex->", docid)
+  id = str.substring(str.indexOf('?') + 1)
 
   //check the access using mail id and docid
 
-	x=1
-	if(x==0){
-		res.redirect('/profile');
-	}
-	else{
-    req.session.docId=docid
-    res.redirect('/'+"?"+id)
-	}
-	
+  x = 1
+  if (x == 0) {
+    res.redirect('/profile');
+  }
+  else {
+    req.session.docId = docid
+    res.redirect('/' + "?" + id)
+  }
+
 });
 
 app.post('/add/:id', function (req, res) {
-	console.log("EMAIL to be added=",req.body.email,req.params.id)
-  if(id!= undefined){
-     console.log("CHECK->",id)
-     res.redirect('/'+"?"+id)
+  console.log("EMAIL to be added=", req.body.email, req.params.id)
+  if (id != undefined) {
+    console.log("CHECK->", id)
+    res.redirect('/' + "?" + id)
   }
-  else{
+  else {
     res.redirect('/')
   }
- 
-	// res.render('index',{status:"url"})
+
+  // res.render('index',{status:"url"})
 })
 
 // app.get("/:id", function (req, res) {
@@ -274,31 +307,28 @@ app.post('/add/:id', function (req, res) {
 
 app.get("/", function (req, res) {
   console.log("QUERY=", req.query);
-	console.log("QUERY=",req.query,typeof(req.body),Object.keys(req.query)[0])
-	id=String(Object.keys(req.query)[0])
-  console.log("ID->",typeof(id))
-  if(id=="undefined"){
+  console.log("QUERY=", req.query, typeof (req.body), Object.keys(req.query)[0])
+  id = String(Object.keys(req.query)[0])
+  console.log("ID->", typeof (id))
+  if (id == "undefined") {
     console.log("LOL")
   }
-  console.log("count=",req.session.docId, req.session.userEmail)
-   if(id!="undefined" && req.session.docId && req.session.userEmail){
-  // if(id!="undefined" && req.session.count!=1){
+  console.log("count=", req.session.docId, req.session.userEmail)
+  if (id != "undefined" && req.session.docId && req.session.userEmail) {
+    // if(id!="undefined" && req.session.count!=1){
     console.log("inside if")
-    res.render("peerpad", { title: "PeerPad",id:id });
-  }else{
-  if(id=="undefined"){
-    console.log("inside sec if")
-    res.render("peerpad", { title: "PeerPad" });
-  }else{
-    res.send("404")
+    res.render("peerpad", { title: "PeerPad", id: id });
+  } else {
+    if (id == "undefined") {
+      console.log("inside sec if")
+      res.render("peerpad", { title: "PeerPad" });
+    } else {
+      res.send("404")
+    }
   }
-  }
-
-
-  
 });
 
-app.get('*', function(req, res){
+app.get('*', function (req, res) {
   res.send('404 not found');
 });
 
