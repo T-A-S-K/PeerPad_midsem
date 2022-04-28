@@ -274,8 +274,7 @@ app.post('/join/:email', function (req, res) {
     res.redirect('/profile');
   }
   else {
-    req.session.docId = docid
-    res.redirect('/' + "?" + id)
+    res.redirect('/' +docid+ "?" + id)
   }
 
 });
@@ -284,48 +283,52 @@ app.post('/add/:id', function (req, res) {
   console.log("EMAIL to be added=", req.body.email, req.params.id)
   if (id != undefined) {
     console.log("CHECK->", id)
-    res.redirect('/' + "?" + id)
+    res.redirect('/' + "?" + id)    //to be changed
   }
   else {
     res.redirect('/')
   }
 
-  // res.render('index',{status:"url"})
 })
 
-// app.get("/:id", function (req, res) {
-//   console.log("QUERY=", req.query);
-// 	// console.log("QUERY=",req.query,typeof(req.body),Object.keys(req.query)[0])
-// 	id=String(Object.keys(req.query)[0])
-//   console.log(req.params.id)
-//   docid=req.params.id
-//   // id=str.substring(str.indexOf('?') + 1)
-//   // console.log("ID->",id)
-//   res.redirect('/'+"?"+id)
-//  // res.render("peerpad", { title: "PeerPad",id:id });
-// });
-
-app.get("/", function (req, res) {
-  console.log("QUERY=", req.query);
+app.get("/:id", function (req, res) {
+  console.log("Here")
+  console.log("QUERY=", req.params);
   console.log("QUERY=", req.query, typeof (req.body), Object.keys(req.query)[0])
   id = String(Object.keys(req.query)[0])
   console.log("ID->", typeof (id))
+  console.log("ID->", typeof (req.session.userEmail))
   if (id == "undefined") {
-    console.log("LOL")
+    console.log("id undefined")
   }
-  console.log("count=", req.session.docId, req.session.userEmail)
-  if (id != "undefined" && req.session.docId && req.session.userEmail) {
-    // if(id!="undefined" && req.session.count!=1){
-    console.log("inside if")
-    res.render("peerpad", { title: "PeerPad", id: id });
-  } else {
-    if (id == "undefined") {
-      console.log("inside sec if")
-      res.render("peerpad", { title: "PeerPad" });
-    } else {
-      res.send("404")
+    if (req.session.userEmail == undefined) {
+    console.log("email undefined")
+  }
+  console.log("count=", req.session.userEmail)
+  if(req.session.userEmail==undefined){
+    res.send("please login")
+  }
+  else{
+    if(id=="undefined"){
+     res.render("peerpad", { title: "PeerPad" });     
+    }
+    else{
+      //check access using docid and userEmail here
+      x=1
+      if(x==1){     //the user has access to the doc
+         res.render("peerpad", { title: "PeerPad", id: id });       
+      }
+      else{         //user doesnt have access to the doc
+         res.send("Your dont have access to the doc")
+      }
     }
   }
+
+});
+
+app.get("/", function (req, res) {
+      res.render("peerpad", { title: "PeerPad" });
+
 });
 
 app.get('*', function (req, res) {
