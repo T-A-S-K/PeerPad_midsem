@@ -5,21 +5,22 @@ block link
   p.sharing-link
     //- form(id="join" action="/add/"+id method="post")
     input(type="email", name="doc", value="", placeholder="email", class="email-  ", id="emailValue") 
+    div(class="email-button-container")
+      i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
+    div(class="copy-status") Copied!
     //-   br
     //-   br
     //-   div 
     //-       input(type="submit", value="Add email", class="email-button-container", style="background-color:rgba(131,4,2,255);color:white;border-color: rgba(131,4,2,255);height:30px;width:150px;border-radius:5px")             
     //-   br
     //- input(type="submit", value="Add email", class="email-button-container", style="background-color:rgba(131,4,2,255);color:white;border-color: rgba(131,4,2,255);height:30px;width:150px;border-radius:5px")
-    a.link(id='myLink' target="_blank") Sharingqwe Link
+    a.link(id='myLink' target="_blank") Sharing Link
     span(id="myLinkInput" class="aside disappear")
     span(class="copy-container" data-tooltip="Copy to Clipboard")
       i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
     span(class="copy-status") Copied!
 
-    span(class="email-button-container" data-tooltip="Copy to Clipboard")
-      i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
-    span(class="copy-status") Copied!
+    
 
 block scripts
   script(src='js/main.js')

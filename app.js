@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 var session = require('express-session');
 var mid = require('./middleware')
 var MongoStore = require('connect-mongo');
+const DocAccess = require("./models/DocAccess");
 const databaseUrl = "mongodb://127.0.0.1:27017/Node_Auth";
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -50,13 +51,37 @@ app.get("/index", function (req, res) {
   res.render("new", { title: "PeerPad" });
 });
 
-app.post("/sendEmail", function (req, res) {
+app.post("/sendEmail", async function (req, res) {
   console.log('WORKS ON SERVER');
   let email = req.body.email;
 
   let link = req.body.link;
   console.log(email);
   console.log(link)
+  let docId = link.split('/')[link.split('/').length - 1].split('?')[0];
+  console.log(docId)
+
+  let docAccess = await DocAccess.findOne({
+    documentId: docId
+  })
+  console.log(email)
+  console.log(typeof (email))
+  if (docAccess == null) {
+    DocAccess.create({
+      documentId: docId,
+      ownerEmail: req.session.userEmail,
+      allowedEmails: [email]
+    })
+  }
+  else {
+    console.log("INSIDEX ELSE")
+    console.log(email);
+    console.log(docId)
+    await DocAccess.updateOne({ 'documentId': docId }, { $push: { 'allowedEmails': email } })
+  }
+
+
+
   var mailOptions = {
     from: 'chasecompskjsce@gmail.com',
     to: email,
@@ -274,7 +299,7 @@ app.post('/join/:email', function (req, res) {
     res.redirect('/profile');
   }
   else {
-    res.redirect('/' +docid+ "?" + id)
+    res.redirect('/' + docid + "?" + id)
   }
 
 });
@@ -291,35 +316,40 @@ app.post('/add/:id', function (req, res) {
 
 })
 
-app.get("/:id", function (req, res) {
+app.get("/:id", async function (req, res) {
   console.log("Here")
   console.log("QUERY=", req.params);
   console.log("QUERY=", req.query, typeof (req.body), Object.keys(req.query)[0])
   id = String(Object.keys(req.query)[0])
+  let docId = req.params.id
   console.log("ID->", typeof (id))
   console.log("ID->", typeof (req.session.userEmail))
   if (id == "undefined") {
     console.log("id undefined")
   }
-    if (req.session.userEmail == undefined) {
+  if (req.session.userEmail == undefined) {
     console.log("email undefined")
   }
   console.log("count=", req.session.userEmail)
-  if(req.session.userEmail==undefined){
-    res.send("please login")
+  if (req.session.userEmail == undefined) {
+    res.redirect("/login")
   }
-  else{
-    if(id=="undefined"){
-     res.render("peerpad", { title: "PeerPad" });     
+  else {
+    if (id == "undefined") {
+      res.render("peerpad", { title: "PeerPad" });
     }
-    else{
+    else {
       //check access using docid and userEmail here
-      x=1
-      if(x==1){     //the user has access to the doc
-         res.render("peerpad", { title: "PeerPad", id: id });       
+      let docAccess = await DocAccess.findOne({
+        documentId: docId,
+        allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
+      })
+      x = 1
+      if (docAccess) {     //the user has access to the doc
+        res.render("peerpad", { title: "PeerPad", id: id });
       }
-      else{         //user doesnt have access to the doc
-         res.send("Your dont have access to the doc")
+      else {         //user doesnt have access to the doc
+        res.send("Your dont have access to the doc")
       }
     }
   }
@@ -327,7 +357,7 @@ app.get("/:id", function (req, res) {
 });
 
 app.get("/", function (req, res) {
-      res.render("peerpad", { title: "PeerPad" });
+  res.render("peerpad", { title: "PeerPad" });
 
 });
 
