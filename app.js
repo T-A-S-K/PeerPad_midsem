@@ -331,7 +331,7 @@ app.get("/:id", async function (req, res) {
     console.log("email undefined")
   }
   console.log("count=", req.session.userEmail)
-  if (false) {
+  if (req.session.userEmail==undefined) {
     res.redirect("/login")
   }
   else {
@@ -345,7 +345,7 @@ app.get("/:id", async function (req, res) {
         allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
       })
       console.log("DocAccess=",docAccess)
-      if (true) {     //the user has access to the doc
+      if (docAccess) {     //the user has access to the doc
         res.render("peerpad", { title: "PeerPad", id: id });
       }
       else {         //user doesnt have access to the doc
