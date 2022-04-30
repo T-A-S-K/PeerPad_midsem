@@ -13,6 +13,7 @@ var session = require('express-session');
 var mid = require('./middleware')
 var MongoStore = require('connect-mongo');
 const DocAccess = require("./models/DocAccess");
+const {user,pass} = require("./keys")
 const databaseUrl = "mongodb://127.0.0.1:27017/Node_Auth";
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -23,8 +24,8 @@ app.set("view engine", "pug");
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'chasecompskjsce@gmail.com',
-    pass: 'rahil_loves_sex'
+    user: user,
+    pass: pass
   }
 });
 
@@ -86,7 +87,7 @@ app.post("/sendEmail", async function (req, res) {
     from: 'chasecompskjsce@gmail.com',
     to: email,
     subject: 'Peerpad document shared',
-    text: 'click on the link and start using peerpad: ' + link,
+    text: 'Copy the link and paste it in the portal to join peerpad: ' + link,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
