@@ -140,58 +140,14 @@ app.get('/register', mid.loggedOut, function (req, res, next) {
   return res.render('register', { title: 'Sign Up' });
 });
 
-// app.post('/registerUser', function(req, res, next) {
-//   if (
-//     req.body.username &&
-
-//     req.body.password &&
-//     req.body.confirmPassword) {
-
-//       // confirm that user typed same password twice
-//       if (req.body.password !== req.body.confirmPassword) {
-//         var err = new Error('Passwords do not match.');
-//         err.status = 400;
-//         return next(err);
-//       }
-
-//       // create object with form input
-//       var userData = {
-//         // email: req.body.email,
-//         username: req.body.username,
-//         // favoriteBook: req.body.favoriteBook,
-//         password: req.body.password
-//       };
-// 	console.log(req.body.username)
-// 	console.log(req.body.password)
-//       // use schema's `create` method to insert document into Mongo
-// 	  User().save().then((user) => {
-// 		  req.session.userId = user._id;
-//         res.render("login", { title: "RANDOM" });
-//       })
-
-//     //   User.create(userData, function (error, user) {
-//     //     if (error) {
-//     //       return next(error);
-//     //     } else {
-//     //       req.session.userId = user._id;
-//     //       return res.redirect('/profile');
-//     //     }
-//     //   });
-
-//     } else {
-//       var err = new Error('All fields required.');
-//       err.status = 400;
-//       return next(err);
-//     }
-// })
-
 app.post("/registerUser", function (req, res) {
   console.log(req.body);
-  bycrypt.hash(req.body.password, 10, function (err, hashedPass) { //2 times SMHHHHHH
+  bycrypt.hash(req.body.password, 10, function (err, hashedPass) { 
     if (err) {
-      res.json({
-        error: err,
-      });
+      // res.json({
+      //   error: err,
+      // });
+      res.render('error',{message:err});
     }
     let user = new User({
       email: req.body.email,
@@ -205,47 +161,13 @@ app.post("/registerUser", function (req, res) {
       })
       .catch((error) => {
         console.log(error)
-        res.json({
-          message: "Error Occured",
-        });
+        // res.json({
+        //   message: "Error Occured",
+        // });
+        res.render('error',{message:error});
       });
   });
 });
-
-// app.post('/loginUser', function (req, res) {
-// 	console.log(req.body);
-// 	var name = req.body.name;
-//     var password = req.body.password;
-
-//     User.findOne({$or: [{name:name}, {password: password}]})
-//     .then(user=>{
-//         if(user){
-//             bycrypt.compare(password, user.password, function(err, result){
-//                 if(err){
-//                     res.json({
-//                         error: err
-//                     })
-//                 }
-//                 if(result){
-//                     let token = jwt.sign({name: user.username}, 'very_secret_key', {expiresIn: '100s'})
-// 					res.render('new')
-// 					// res.json({
-//                     //     message: "Login Successful",
-//                     //     token
-//                     // }) 
-//                 }else{
-//                     res.json({
-//                         message: "Invalid Credentials"
-//                     })
-//                 }
-//             })
-//         }else{
-//             res.json({
-//                 message: "No user found"
-//             })
-//         }
-//     })
-// })
 
 app.post('/loginUser', function (req, res, next) {
   if (req.body.email && req.body.password) {
@@ -253,7 +175,8 @@ app.post('/loginUser', function (req, res, next) {
       if (error || !user) {
         var err = new Error('Wrong email or password.');
         err.status = 401;
-        return next(err);
+        // return next(err);
+        res.render('error',{message:err});
       } else {
         console.log("SESSION")
         req.session.userId = user._id;
@@ -265,7 +188,8 @@ app.post('/loginUser', function (req, res, next) {
   } else {
     var err = new Error('Email and password are required.');
     err.status = 401;
-    return next(err);
+    //return next(err);
+    res.render('error',{message:err});
   }
 });
 
@@ -281,7 +205,7 @@ app.get('/profile', mid.requiresLogin, function (req, res, next) {
     });
 });
 
-app.post('/join/:email', function (req, res) {
+app.post('/join/:email',async function (req, res) {
   console.log("REQQ==", req.body.doc, req.params.email)
   str = req.body.doc
   email = req.body.email || req.session.userEmail
@@ -293,28 +217,31 @@ app.post('/join/:email', function (req, res) {
   id = str.substring(str.indexOf('?') + 1)
 
   //check the access using mail id and docid
-
-  x = 1
-  if (x == 0) {
-    res.redirect('/profile');
-  }
-  else {
-    res.redirect('/' + docid + "?" + id)
-  }
+      let docAccess = await DocAccess.findOne({
+        documentId: docid,
+        allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
+      })
+      console.log("DocAccess=",docAccess)
+      if (docAccess) {     //the user has access to the doc
+        res.redirect('/' + docid + "?" + id)
+      }
+      else {         //user doesnt have access to the doc
+        res.render('error',{message:"You dont have access to this document"});
+      }
 
 });
 
-app.post('/add/:id', function (req, res) {
-  console.log("EMAIL to be added=", req.body.email, req.params.id)
-  if (id != undefined) {
-    console.log("CHECK->", id)
-    res.redirect('/' + "?" + id)    //to be changed
-  }
-  else {
-    res.redirect('/')
-  }
+// app.post('/add/:id', function (req, res) {
+//   console.log("EMAIL to be added=", req.body.email, req.params.id)
+//   if (id != undefined) {
+//     console.log("CHECK->", id)
+//     res.redirect('/' + "?" + id)    //to be changed
+//   }
+//   else {
+//     res.redirect('/')
+//   }
 
-})
+// })
 
 app.get("/:id", async function (req, res) {
   console.log("Here")
@@ -322,7 +249,7 @@ app.get("/:id", async function (req, res) {
   console.log("QUERY=", req.query, typeof (req.body), Object.keys(req.query)[0])
   id = String(Object.keys(req.query)[0])
   let docId = req.params.id
-  console.log("ID->", typeof (id))
+  console.log("ID->", typeof (id),id)
   console.log("ID->", typeof (req.session.userEmail))
   if (id == "undefined") {
     console.log("id undefined")
@@ -335,7 +262,7 @@ app.get("/:id", async function (req, res) {
     res.redirect("/login")
   }
   else {
-    if (id == "undefined") {
+    if (id == "undefined" && id=='') {
       res.render("peerpad", { title: "PeerPad" });
     }
     else {
@@ -349,7 +276,8 @@ app.get("/:id", async function (req, res) {
         res.render("peerpad", { title: "PeerPad", id: id });
       }
       else {         //user doesnt have access to the doc
-        res.send("Your dont have access to the doc")
+       // res.send("Your dont have access to the doc")
+        res.render('error',{message:"You dont have access to this document"});
       }
     }
   }
@@ -357,12 +285,16 @@ app.get("/:id", async function (req, res) {
 });
 
 app.get("/", function (req, res) {
+  if(req.session.userEmail==undefined){
+    res.redirect("/login")
+  }
   res.render("peerpad", { title: "PeerPad" });
 
 });
 
 app.get('*', function (req, res) {
-  res.send('404 not found');
+  console.log("error")
+  res.render('error',{message:"Page not found"});
 });
 
 var srv = app.listen(port, function () {
