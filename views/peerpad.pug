@@ -4,9 +4,9 @@ extends layout_peer
 block link
   p.sharing-link
     //- form(id="join" action="/add/"+id method="post")
-    input(type="email", name="doc", value="", placeholder="email", class="email-  ", id="emailValue") 
+    input(type="email", name="doc", value="", placeholder="email", class="email-  ",id="emailValue") 
     div(class="email-button-container")
-      i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
+      i#upload(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
     div(class="copy-status") Copied!
     //-   br
     //-   br
@@ -17,7 +17,7 @@ block link
     a.link(id='myLink' target="_blank") Sharing Link
     span(id="myLinkInput" class="aside disappear")
     span(class="copy-container" data-tooltip="Copy to Clipboard")
-      i(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
+      i#clipboard(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
     span(class="copy-status") Copied!
 
     
