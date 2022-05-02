@@ -48,9 +48,9 @@ app.use(session({
   })
 }));
 
-app.get("/index", function (req, res) {
-  res.render("new", { title: "PeerPad" });
-});
+// app.get("/index", function (req, res) {
+//   res.render("new", { title: "PeerPad" });
+// });
 
 app.post("/sendEmail", async function (req, res) {
   console.log('WORKS ON SERVER');
@@ -87,7 +87,7 @@ app.post("/sendEmail", async function (req, res) {
     from: 'chasecompskjsce@gmail.com',
     to: email,
     subject: 'Peerpad document shared',
-    text: 'Copy the link and paste it in the portal to join peerpad: ' + link,
+    text: req.session.userEmail+' has shared document with you. Copy the link and paste it in the portal to join peerpad: ' + link,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
@@ -259,8 +259,8 @@ app.get("/:id", async function (req, res) {
     console.log("email undefined")
   }
   console.log("count=", req.session.userEmail)
-  // if (req.session.userEmail==undefined) {
-    if(false){
+  if (req.session.userEmail==undefined) {
+    // if(false){
     res.redirect("/login")
   }
   else {
@@ -274,8 +274,8 @@ app.get("/:id", async function (req, res) {
         allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
       })
       console.log("DocAccess=",docAccess)
-      // if (docAccess) {     //the user has access to the doc
-      if(true){
+      if (docAccess) {     //the user has access to the doc
+      // if(true){
         res.render("peerpad", { title: "PeerPad", id: id });
       }
       else {         //user doesnt have access to the doc
