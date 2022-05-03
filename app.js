@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
+var cors = require('cors')
 const port = 3000;
 var nodemailer = require('nodemailer');
 const bodyParser = require("body-parser");
@@ -15,6 +16,7 @@ var MongoStore = require('connect-mongo');
 const DocAccess = require("./models/DocAccess");
 const {user,pass} = require("./keys")
 const databaseUrl = "mongodb://127.0.0.1:27017/Node_Auth";
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
