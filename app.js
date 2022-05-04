@@ -14,7 +14,7 @@ var session = require('express-session');
 var mid = require('./middleware')
 var MongoStore = require('connect-mongo');
 const DocAccess = require("./models/DocAccess");
-const {user,pass} = require("./keys")
+const { user, pass } = require("./keys")
 const databaseUrl = "mongodb://127.0.0.1:27017/Node_Auth";
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -22,6 +22,8 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
+
+console.log(user)
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -63,7 +65,8 @@ app.post("/sendEmail", async function (req, res) {
   console.log(link)
   let docId = link.split('/')[link.split('/').length - 1].split('?')[0];
   console.log(docId)
-
+  console.log(user)
+  console.log(pass)
   let docAccess = await DocAccess.findOne({
     documentId: docId
   })
@@ -89,7 +92,7 @@ app.post("/sendEmail", async function (req, res) {
     from: 'chasecompskjsce@gmail.com',
     to: email,
     subject: 'Peerpad document shared',
-    text: req.session.userEmail+' has shared document with you. Copy the link and paste it in the portal to join peerpad: ' + link,
+    text: req.session.userEmail + ' has shared document with you. Copy the link and paste it in the portal to join peerpad: ' + link,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
@@ -145,12 +148,12 @@ app.get('/register', mid.loggedOut, function (req, res, next) {
 
 app.post("/registerUser", function (req, res) {
   console.log(req.body);
-  bycrypt.hash(req.body.password, 10, function (err, hashedPass) { 
+  bycrypt.hash(req.body.password, 10, function (err, hashedPass) {
     if (err) {
       // res.json({
       //   error: err,
       // });
-      res.render('error',{message:err});
+      res.render('error', { message: err });
     }
     let user = new User({
       email: req.body.email,
@@ -167,7 +170,7 @@ app.post("/registerUser", function (req, res) {
         // res.json({
         //   message: "Error Occured",
         // });
-        res.render('error',{message:error});
+        res.render('error', { message: error });
       });
   });
 });
@@ -179,20 +182,20 @@ app.post('/loginUser', function (req, res, next) {
         var err = new Error('Wrong email or password.');
         err.status = 401;
         // return next(err);
-        res.render('error',{message:err});
+        res.render('login', { message: err });
       } else {
         console.log("SESSION")
         req.session.userId = user._id;
         req.session.userEmail = req.body.email
         // return res.redirect('/profile');
-        res.render('profile', { title: 'PeerPad', email: req.body.email });
+        res.render('profile', { title: 'PeerPad', email: req.body.email, currentUser: req.session.userEmail });
       }
     });
   } else {
     var err = new Error('Email and password are required.');
     err.status = 401;
     //return next(err);
-    res.render('error',{message:err});
+    res.render('error', { message: err });
   }
 });
 
@@ -203,12 +206,12 @@ app.get('/profile', mid.requiresLogin, function (req, res, next) {
         return next(error);
       } else {
         console.log('trying to render')
-        return res.render('profile', { title: 'Profile', name: user.username, favorite: user.favoriteBook, url: '' });
+        return res.render('profile', { title: 'Profile', name: user.username, favorite: user.favoriteBook, url: '', currentUser: req.session.userEmail});
       }
     });
 });
 
-app.post('/join/:email',async function (req, res) {
+app.post('/join/:email', async function (req, res) {
   console.log("REQQ==", req.body.doc, req.params.email)
   str = req.body.doc
   email = req.body.email || req.session.userEmail
@@ -220,17 +223,17 @@ app.post('/join/:email',async function (req, res) {
   id = str.substring(str.indexOf('?') + 1)
 
   //check the access using mail id and docid
-      let docAccess = await DocAccess.findOne({
-        documentId: docid,
-        allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
-      })
-      console.log("DocAccess=",docAccess)
-      if (docAccess) {     //the user has access to the doc
-        res.redirect('/' + docid + "?" + id)
-      }
-      else {         //user doesnt have access to the doc
-        res.render('error',{message:"You dont have access to this document"});
-      }
+  let docAccess = await DocAccess.findOne({
+    documentId: docid,
+    allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
+  })
+  console.log("DocAccess=", docAccess)
+  if (docAccess) {     //the user has access to the doc
+    res.redirect('/' + docid + "?" + id)
+  }
+  else {         //user doesnt have access to the doc
+    res.render('error', { message: "You dont have access to this document" });
+  }
 
 });
 
@@ -252,7 +255,7 @@ app.get("/:id", async function (req, res) {
   console.log("QUERY=", req.query, typeof (req.body), Object.keys(req.query)[0])
   id = String(Object.keys(req.query)[0])
   let docId = req.params.id
-  console.log("ID->", typeof (id),id)
+  console.log("ID->", typeof (id), id)
   console.log("ID->", typeof (req.session.userEmail))
   if (id == "undefined") {
     console.log("id undefined")
@@ -261,12 +264,12 @@ app.get("/:id", async function (req, res) {
     console.log("email undefined")
   }
   console.log("count=", req.session.userEmail)
-  if (req.session.userEmail==undefined) {
+  if (req.session.userEmail == undefined) {
     // if(false){
     res.redirect("/login")
   }
   else {
-    if (id == "undefined" && id=='') {
+    if (id == "undefined" && id == '') {
       res.render("peerpad", { title: "PeerPad" });
     }
     else {
@@ -275,14 +278,14 @@ app.get("/:id", async function (req, res) {
         documentId: docId,
         allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
       })
-      console.log("DocAccess=",docAccess)
+      console.log("DocAccess=", docAccess)
       if (docAccess) {     //the user has access to the doc
-      // if(true){
+        // if(true){
         res.render("peerpad", { title: "PeerPad", id: id });
       }
       else {         //user doesnt have access to the doc
-       // res.send("Your dont have access to the doc")
-        res.render('error',{message:"You dont have access to this document"});
+        // res.send("Your dont have access to the doc")
+        res.render('error', { message: "You dont have access to this document" });
       }
     }
   }
@@ -290,7 +293,7 @@ app.get("/:id", async function (req, res) {
 });
 
 app.get("/", function (req, res) {
-  if(req.session.userEmail==undefined){
+  if (req.session.userEmail == undefined) {
     res.redirect("/login")
   }
   res.render("peerpad", { title: "PeerPad" });
@@ -299,7 +302,7 @@ app.get("/", function (req, res) {
 
 app.get('*', function (req, res) {
   console.log("error")
-  res.render('error',{message:"Page not found"});
+  res.render('error', { message: "Page not found" });
 });
 
 var srv = app.listen(port, function () {

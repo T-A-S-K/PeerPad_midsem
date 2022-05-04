@@ -4,9 +4,13 @@ extends layout_peer
 block link
   p.sharing-link
     //- form(id="join" action="/add/"+id method="post")
-    input(type="email", name="doc", value="", placeholder="email", class="email-  ",id="emailValue") 
-    div(class="email-button-container")
-      i#upload(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
+    input(type="email", name="doc", value="", placeholder="email", class="email-  ",id="emailValue", style="padding: 10px 15px; margin: 8px 0; box-sizing: border-box;") 
+    //- button#upload(class="email-button-container")
+    span(class="email-button-container")
+      button#upload(type='button', style="float: none; margin-left: 20") Add Email
+      //- a.btn.btn-info.pull-md-right(style="background-color:rgba(131,4,2,255);color:white;border-color: rgba(131,4,2,255);height:30px;width:150px;border-radius:5px") Add Email
+      //- button#upload()
+      //- i#upload(data-feather="copy" class="copy-link" color="rgb(232, 17, 17)")
     div(class="copy-status") Copied!
     //-   br
     //-   br
