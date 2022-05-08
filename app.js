@@ -308,6 +308,7 @@ app.get('*', function (req, res) {
 
 var srv = app.listen(port, function () {
   console.log("Listening on " + port);
+  
 });
 
 app.use(
