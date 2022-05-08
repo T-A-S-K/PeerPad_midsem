@@ -16,7 +16,7 @@ var mid = require('./middleware')
 var MongoStore = require('connect-mongo');
 const DocAccess = require("./models/DocAccess");
 const { user, pass } = require("./keys")
-const databaseUrl = "mongodb+srv://tarush:Test@1234@cluster0.cjefn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const databaseUrl = "mongodb+srv://tarush:Test@1234@cluster0.cjefn.mongodb.net/peerpadDB?retryWrites=true&w=majority";
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
