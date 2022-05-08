@@ -44,14 +44,14 @@ mongoose
     console.log("Error has occurred while connecting to the database: ", err);
   });
 
-app.use(session({
-  secret: 'treehouse loves you',
-  resave: true,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: "mongodb://localhost:27017/Node_Auth"
-  })
-}));
+// app.use(session({
+//   secret: 'treehouse loves you',
+//   resave: true,
+//   saveUninitialized: false,
+//   store: MongoStore.create({
+//     mongoUrl: "mongodb://localhost:27017/Node_Auth"
+//   })
+// }));
 
 // app.get("/index", function (req, res) {
 //   res.render("new", { title: "PeerPad" });
