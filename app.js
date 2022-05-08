@@ -148,31 +148,61 @@ app.get('/register', mid.loggedOut, function (req, res, next) {
 
 app.post("/registerUser", function (req, res) {
   console.log(req.body);
-  bycrypt.hash(req.body.password, 10, function (err, hashedPass) {
-    if (err) {
-      // res.json({
-      //   error: err,
-      // });
-      res.render('error', { message: err });
-    }
-    let user = new User({
-      email: req.body.email,
-      password: hashedPass,
-    });
-    console.log("This is my pass: " + typeof hashedPass);
-    user
-      .save()
-      .then((user) => {
-        res.render("login", { title: "RANDOM" });
-      })
-      .catch((error) => {
-        console.log(error)
-        // res.json({
-        //   message: "Error Occured",
-        // });
-        res.render('error', { message: error });
-      });
-  });
+  pw1 = req.body.password;
+  pw2 = req.body.confirmPassword
+  User.find({"email": req.body.email})
+        .then(
+            result => {
+                console.log(result.length);
+                if (result.length !== 0) {
+                  console.log("EXISTS");
+                  res.render('register', { message: "User exists" });
+
+                } else if(pw1!=pw2) {
+                  res.render('register', { message: "Password doesn't match" });
+                }
+                  else {
+                  bycrypt.hash(req.body.password, 10, function (err, hashedPass) {
+                    if (err) {
+                      // res.json({
+                      //   error: err,
+                      // });
+                      res.render('error', { message: err });
+                    }
+                    let user = new User({
+                      email: req.body.email,
+                      password: hashedPass,
+                    });
+                    console.log("This is my pass: " + typeof hashedPass);
+                    if(User.findOne())
+                    user
+                      .save()
+                      .then((user) => {
+                        res.render("login", { title: "RANDOM" });
+                      })
+                      .catch((error) => {
+                        console.log(error)
+                        // res.json({
+                        //   message: "Error Occured",
+                        // });
+                        res.render('error', { message: error });
+                      });
+                  });
+                          
+                }
+            }
+        )
+        .catch(
+            error => {
+                res.json({
+                    message: ' User Register fail',
+                    status: false,
+
+                })
+            }
+        )
+
+  
 });
 
 app.post('/loginUser', function (req, res, next) {
