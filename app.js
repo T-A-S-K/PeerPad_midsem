@@ -264,8 +264,8 @@ app.get("/:id", async function (req, res) {
     console.log("email undefined")
   }
   console.log("count=", req.session.userEmail)
-  if (req.session.userEmail == undefined) {
-    // if(false){
+  // if (req.session.userEmail == undefined) {
+    if(false){
     res.redirect("/login")
   }
   else {
@@ -279,8 +279,8 @@ app.get("/:id", async function (req, res) {
         allowedEmails: { $elemMatch: { $eq: req.session.userEmail } }
       })
       console.log("DocAccess=", docAccess)
-      if (docAccess) {     //the user has access to the doc
-        // if(true){
+      // if (docAccess) {     //the user has access to the doc
+        if(true){
         res.render("peerpad", { title: "PeerPad", id: id });
       }
       else {         //user doesnt have access to the doc
@@ -293,9 +293,9 @@ app.get("/:id", async function (req, res) {
 });
 
 app.get("/", function (req, res) {
-  if (req.session.userEmail == undefined) {
-    res.redirect("/login")
-  }
+  // if (req.session.userEmail == undefined) {
+  //   res.redirect("/login")
+  // }
   res.render("peerpad", { title: "PeerPad" });
 
 });
