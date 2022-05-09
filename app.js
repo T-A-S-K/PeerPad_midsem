@@ -83,7 +83,14 @@ app.post("/sendEmail", async function (req, res) {
     console.log("INSIDEX ELSE")
     console.log(email);
     console.log(docId)
-    await DocAccess.updateOne({ 'documentId': docId }, { $push: { 'allowedEmails': email } })
+    if(docAccess.allowedEmails.includes(email)){
+      console.log('returned')
+      return
+    }
+    else{
+      await DocAccess.updateOne({ 'documentId': docId }, { $push: { 'allowedEmails': email } })
+    }
+    
   }
 
 
