@@ -4,7 +4,12 @@ block content
   .main.container.row
     .col-md-6.col-md-offset-3
       h1.display-4.m-b-2 Sign Up
-      
+      if message 
+         script.
+          alert("User already exist")
+      if msg
+         script.
+          alert("Password doesn't match")
       // register form
       form(method='POST' action='/registerUser')
         div.form-group

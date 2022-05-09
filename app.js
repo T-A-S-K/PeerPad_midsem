@@ -156,10 +156,12 @@ app.post("/registerUser", function (req, res) {
                 console.log(result.length);
                 if (result.length !== 0) {
                   console.log("EXISTS");
-                  res.render('register', { message: "User exists" });
+               
+                  res.render('register', { message:"User already exists"});
 
                 } else if(pw1!=pw2) {
-                  res.render('register', { message: "Password doesn't match" });
+                 
+                  res.render('register', { msg: "Password doesn't match" });
                 }
                   else {
                   bycrypt.hash(req.body.password, 10, function (err, hashedPass) {
