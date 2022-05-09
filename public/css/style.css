@@ -132,6 +132,7 @@ Editor
   min-width: 600px;
   justify-content: flex-start;
   padding: 0 10px;
+  
 }
 
 .header {
@@ -158,6 +159,14 @@ Editor
   min-width: 150px;
   flex-grow: 1;
   margin: 50px 0 0 10px;
+  background-color: #fff;
+  padding: 0 10px 10px;
+
+  border-radius: 5px;
+  border: 1px solid rgb(232, 17, 17);
+  font-size: large;
+
+  flex-direction: column;
 }
 
 #peerId li {
@@ -256,11 +265,13 @@ CodeMirror
   border-radius: 8px;
   line-height: 1.5em;
   border: none;
-  box-shadow: 0 2px 20px -2px rgba(232, 17, 17, 0.082);
+  /* box-shadow: 0 2px 20px -2px rgba(232, 17, 17, 0.082); */
   clear: both;
   padding: 0;
   height: 560px;
   width: 100%;
+  border-radius: 5px;
+  border: 1px solid rgb(232, 17, 17);
 }
 
 .CodeMirror-focused {
